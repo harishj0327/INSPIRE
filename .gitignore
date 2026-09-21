@@ -1,0 +1,41 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+backend/.venv/
+
+# Local databases and runtime uploads
+backend/*.db
+backend/uploads/
+uploads/
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.tsbuildinfo
+
+# Generated reports and test fixtures
+*.pdf
+sample_tender.txt
+frontend/temp_tender.txt
+
+# Browser, coverage, and test artifacts
+playwright-report/
+test-results/
+coverage/
+screenshots/
+
+# Editors and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
