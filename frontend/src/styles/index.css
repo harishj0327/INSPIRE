@@ -39,6 +39,13 @@ body {
   color: var(--text);
 }
 
+h1,
+h2,
+h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 500;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -390,7 +397,6 @@ a {
 .dashboard-intro h1 {
   margin: 8px 0 0;
   max-width: 720px;
-  font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(2.1rem, 3.5vw, 3.35rem);
   font-weight: 500;
   line-height: 1.12;
