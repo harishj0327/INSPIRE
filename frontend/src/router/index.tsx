@@ -11,6 +11,7 @@ import SavedPage from '../pages/SavedPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import AuditPage from '../pages/AuditPage';
 import SettingsPage from '../pages/SettingsPage';
+import ReportsPage from '../pages/ReportsPage';
 import LandingPage from '../pages/LandingPage';
 import AppLayout from '../layouts/AppLayout';
 import { isAuthenticated } from '../utils/auth';
@@ -35,6 +36,7 @@ export default function AppRouter() {
       >
         <Route index element={<DashboardPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="requirements" element={<NewRequirementPage />} />
         <Route path="requirements/new" element={<NewRequirementPage />} />
         <Route path="requirements/:id" element={<RequirementDetailPage />} />
         <Route path="standards" element={<StandardsPage />} />
@@ -44,6 +46,7 @@ export default function AppRouter() {
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="audit" element={<AuditPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="reports" element={<ReportsPage />} />
       </Route>
     </Routes>
   );

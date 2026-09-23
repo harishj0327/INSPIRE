@@ -54,15 +54,15 @@ export default function RequirementDetailPage() {
     URL.revokeObjectURL(url);
   };
 
-  if (!requirement) return <div className="card panel-compact">Loading requirement…</div>;
+  if (!requirement) return <div className="card panel-compact">Loading recommendations…</div>;
 
   return (
     <div className="page-stack">
       <div className="page-header">
         <div>
-          <span className="eyebrow dark">Requirement Understanding</span>
-          <h1>{requirement.title}</h1>
-          <p>{requirement.requirement_text}</p>
+          <span className="eyebrow dark">Recommendation context</span>
+          <h1>Recommended Indian Standards</h1>
+          <p>Standards identified based on your procurement requirement.</p>
         </div>
         <button className="button-secondary inline-flex" onClick={downloadReport}>
           <Download size={16} />
@@ -71,40 +71,29 @@ export default function RequirementDetailPage() {
       </div>
 
       <div className="card panel-compact">
-        <div className="section-header">
-          <h2>Requirement details</h2>
-        </div>
-
-        <div className="info-grid two-column">
-          <div><strong>Product / Item:</strong> {requirement.product || '—'}</div>
-          <div><strong>Quantity:</strong> {requirement.quantity || '—'}</div>
-          <div><strong>Application / Intended Use:</strong> {requirement.application || '—'}</div>
-          <div><strong>Category:</strong> {requirement.product_category || '—'}</div>
-          <div className="two-column-span"><strong>Technical Requirements:</strong> {requirement.technical_requirements || '—'}</div>
-          <div className="two-column-span"><strong>Other Relevant Constraints:</strong> {requirement.requirement_text || '—'}</div>
-        </div>
-
-        <div className="button-row align-start">
-          <Link to="#recommended-standards" className="button-primary inline-flex">
-            View Recommended Standards
-            <ArrowRight size={18} />
-          </Link>
+        <div className="context-kicker">Requirement</div>
+        <h2>{requirement.title}</h2>
+        <p className="content-copy">{requirement.requirement_text}</p>
+        <div className="context-line">
+          {[requirement.quantity && `${requirement.quantity} units`, requirement.product_category, requirement.application].filter(Boolean).join(' · ')}
         </div>
       </div>
 
       <div id="recommended-standards" className="card panel-compact">
         <div className="section-header">
-          <h2>Recommended Indian Standards</h2>
+          <h2>Recommended standards</h2>
+          <span className="muted-copy">{recommendations.length} identified</span>
         </div>
 
         {message && <div className="error-banner">{message}</div>}
 
         <div className="stacked-list">
           {recommendations.length ? (
-            recommendations.map((rec) => (
+            recommendations.map((rec, index) => (
               <div key={rec.id} className="finding-card">
                 <div className="finding-header">
                   <div>
+                    <div className="small-label">{index === 0 ? 'Primary recommendation' : 'Related recommendation'}</div>
                     <div className="row-title">{rec.standard?.is_number || 'IS'} {rec.standard?.title}</div>
                     <div className="row-meta">{rec.score}% Relevant</div>
                   </div>
@@ -120,7 +109,7 @@ export default function RequirementDetailPage() {
                 <div className="content-copy">
                   <p><strong>Why it is relevant:</strong> {rec.why_it_matches}</p>
                   <p><strong>Scope / Applicability:</strong> {rec.standard?.scope || rec.standard?.description || 'Scope available in the database record.'}</p>
-                  <p><strong>Certification Information:</strong> {rec.standard?.source || 'Certification details should be verified against the authoritative BIS source.'}</p>
+                  <p><strong>Certification / conformity:</strong> {rec.standard?.source || 'Information is not available in the current database record.'}</p>
                   <p><strong>Testing Information:</strong> {rec.standard?.technical_parameters || 'Testing details are recorded in the standard data.'}</p>
                   <p><strong>Version / Amendment:</strong> {rec.standard?.current_version || rec.standard?.year || 'Version information is not available in the current dataset.'}</p>
                   <p><strong>Source:</strong> {rec.standard?.source || 'Source information available through the current database record.'}</p>
@@ -131,11 +120,11 @@ export default function RequirementDetailPage() {
                 <div className="button-row align-start">
                   <Link
                     to={`/app/standards/${rec.standard_id || rec.standard?.id}`}
-                    state={{ relevanceScore: rec.score }}
+                    state={{ relevanceScore: rec.score, requirementId: id }}
                     className="button-secondary inline-flex"
                   >
                     <ExternalLink size={15} />
-                    View Standard
+                    View Standard Details
                   </Link>
                 </div>
               </div>
@@ -144,6 +133,25 @@ export default function RequirementDetailPage() {
             <div className="empty-state">No recommendations yet for this requirement.</div>
           )}
         </div>
+      </div>
+
+      <div className="card panel-compact">
+        <div className="section-header"><h2>Related standards</h2></div>
+        <div className="stacked-list compact-list">
+          {recommendations.flatMap((rec) => rec.related_standards || []).filter((item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index).map((item: any) => (
+            <div className="list-row" key={item.id}>
+              <div><div className="small-label">{item.is_number}</div><div className="row-title">{item.title}</div><div className="row-meta">{item.description || item.scope || 'Related standard in the current database record.'}</div></div>
+              <Link to={`/app/standards/${item.id}`} state={{ requirementId: id }} className="button-secondary small-button">View Standard</Link>
+            </div>
+          ))}
+        </div>
+        {!recommendations.some((rec) => rec.related_standards?.length) && <div className="empty-state">No related standards are currently recorded.</div>}
+      </div>
+
+      <div className="button-row justify-end">
+        <Link to={`/app/tender-review?requirement_id=${id}`} className="button-primary inline-flex">
+          Review Tender Against These Standards <ArrowRight size={18} />
+        </Link>
       </div>
 
       <div className="disclaimer small-disclaimer">

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import api from '../services/api';
 
 export default function StandardDetailPage() {
   const { id } = useParams();
   const location = useLocation();
   const relevanceScore = (location.state as any)?.relevanceScore ?? null;
+  const requirementId = (location.state as any)?.requirementId ?? null;
   const [standard, setStandard] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
 
@@ -35,6 +37,10 @@ export default function StandardDetailPage() {
           </div>
         )}
       </div>
+
+      <Link to={requirementId ? `/app/requirements/${requirementId}` : '/app/standards'} className="back-link">
+        <ArrowLeft size={16} /> {requirementId ? 'Back to Recommended Standards' : 'Back to Indian Standards Catalogue'}
+      </Link>
 
       <div className="info-grid two-column">
         <div className="card panel-compact">
@@ -84,6 +90,7 @@ export default function StandardDetailPage() {
                   <div className="row-title">{item.related_standard?.is_number} {item.related_standard?.title}</div>
                   <div className="row-meta">{item.relationship_type || 'Related standard'}</div>
                 </div>
+                {item.related_standard?.id && <Link to={`/app/standards/${item.related_standard.id}`} state={{ requirementId }} className="button-secondary small-button">View Standard</Link>}
               </div>
             ))}
           </div>
@@ -102,8 +109,8 @@ export default function StandardDetailPage() {
       </div>
 
       <div className="button-row align-start">
-        <Link to="/app/tender-review" className="button-primary inline-flex">
-          Review Tender Against These Standards
+        <Link to={requirementId ? `/app/tender-review?requirement_id=${requirementId}` : '/app/tender-review'} className="button-primary inline-flex">
+          Review Tender Against These Standards <ArrowRight size={17} />
         </Link>
       </div>
 
