@@ -11,6 +11,7 @@ __pycache__/
 .venv/
 venv/
 backend/.venv/
+backend/.venv312/
 
 # Local databases and runtime uploads
 backend/*.db
