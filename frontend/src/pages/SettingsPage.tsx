@@ -1,8 +1,22 @@
 export default function SettingsPage() {
   return (
-    <div className="card p-6">
-      <h1 className="text-3xl font-bold">Settings</h1>
-      <p className="mt-3 text-slate-600">Configure procurement review preferences and source validation settings.</p>
+    <div className="page-stack">
+      <div className="page-header">
+        <div>
+          <span className="eyebrow dark">Reports / Settings</span>
+          <h1>Review configuration</h1>
+          <p>Manage procurement review preferences and supporting information.</p>
+        </div>
+      </div>
+
+      <div className="card panel-compact">
+        <div className="section-header">
+          <h2>Available settings</h2>
+        </div>
+        <div className="content-copy">
+          This settings area remains available for operational preferences while the primary INSPIRE workflow continues to centre on requirement analysis, recommended standards and tender review.
+        </div>
+      </div>
     </div>
   );
 }

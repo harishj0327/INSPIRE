@@ -105,15 +105,22 @@ def seed_standards(db):
     ]
 
     for standard_data in standards:
-        standard = Standard(**standard_data)
-        db.add(standard)
+        standard = db.query(Standard).filter(Standard.is_number == standard_data['is_number']).first()
+        if not standard:
+            standard = Standard(**standard_data)
+            db.add(standard)
+            db.flush()
     db.commit()
 
     for standard in db.query(Standard).all():
-        db.add(StandardVersion(standard_id=standard.id, version=standard.current_version, year=standard.year, details='Prototype dataset for demo review'))
-        db.add(Amendment(standard_id=standard.id, amendment_number='Amd. 1', description='Information not available in the current knowledge base.', year=standard.year))
-        db.add(TestingRequirement(standard_id=standard.id, test_name='Mechanical performance test', method='As per informed procurement review', description='Information not available in the current knowledge base.'))
-        db.add(Certification(standard_id=standard.id, cert_name='BIS conformity review', requirement='Information not available in the current knowledge base.'))
+        if not db.query(StandardVersion).filter_by(standard_id=standard.id, version=standard.current_version).first():
+            db.add(StandardVersion(standard_id=standard.id, version=standard.current_version, year=standard.year, details='Prototype dataset for demo review'))
+        if not db.query(Amendment).filter_by(standard_id=standard.id, amendment_number='Amd. 1').first():
+            db.add(Amendment(standard_id=standard.id, amendment_number='Amd. 1', description='Information not available in the current knowledge base.', year=standard.year))
+        if not db.query(TestingRequirement).filter_by(standard_id=standard.id, test_name='Mechanical performance test').first():
+            db.add(TestingRequirement(standard_id=standard.id, test_name='Mechanical performance test', method='As per informed procurement review', description='Information not available in the current knowledge base.'))
+        if not db.query(Certification).filter_by(standard_id=standard.id, cert_name='BIS conformity review').first():
+            db.add(Certification(standard_id=standard.id, cert_name='BIS conformity review', requirement='Information not available in the current knowledge base.'))
 
     db.commit()
 
@@ -123,7 +130,13 @@ def seed_standards(db):
         (standards_by_number['IS 1554 (Part 1)'], standards_by_number['IS 3370'], 'INSTALLATION', 'Cable and water infrastructure standards are often reviewed together in industrial projects.'),
     ]
     for source, target, rel_type, desc in rels:
-        db.add(StandardRelationship(standard_id=source.id, related_standard_id=target.id, relationship_type=rel_type, description=desc))
+        existing = db.query(StandardRelationship).filter_by(
+            standard_id=source.id,
+            related_standard_id=target.id,
+            relationship_type=rel_type,
+        ).first()
+        if not existing:
+            db.add(StandardRelationship(standard_id=source.id, related_standard_id=target.id, relationship_type=rel_type, description=desc))
     db.commit()
 
 
@@ -183,7 +196,14 @@ def seed_audit_logs(db, user_id):
         ('recommendation_verified', 'recommendation', 'Recommendation reviewed against retrieved records'),
     ]
     for action, object_type, details in logs:
-        db.add(AuditLog(user_id=user_id, action=action, object_type=object_type, details=details))
+        existing = db.query(AuditLog).filter_by(
+            user_id=user_id,
+            action=action,
+            object_type=object_type,
+            details=details,
+        ).first()
+        if not existing:
+            db.add(AuditLog(user_id=user_id, action=action, object_type=object_type, details=details))
     db.commit()
 
 
